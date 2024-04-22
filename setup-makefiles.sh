@@ -8,7 +8,7 @@
 
 set -e
 
-DEVICE=xiaomi13
+DEVICE=nuwa
 VENDOR=xiaomi
 
 # Load extract_utils and do some sanity checks

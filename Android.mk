@@ -6,7 +6,7 @@
 
 LOCAL_PATH := $(call my-dir)
 
-ifneq ($(filter xiaomi13,$(TARGET_DEVICE)),)
+ifeq ($(TARGET_DEVICE),nuwa)
 
 include $(call all-makefiles-under,$(LOCAL_PATH))
 

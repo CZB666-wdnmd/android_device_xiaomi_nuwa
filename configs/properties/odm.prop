@@ -16,3 +16,16 @@ import /odm/etc/build_${ro.boot.hardware.sku}.prop
 
 # SPU
 vendor.gatekeeper.disable_spu=true
+
+# Bluetooth
+bluetooth.device.default_name=Xiaomi 13 Pro
+
+# Display
+ro.sf.lcd_density=530
+ro.vendor.touchfeature.type=183
+
+# Marketname
+ro.product.marketname=Xiaomi 13 Pro
+
+# USB
+vendor.usb.product_string=Xiaomi 13 Pro

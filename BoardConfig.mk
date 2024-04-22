@@ -4,7 +4,12 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-DEVICE_PATH := device/xiaomi/xiaomi13
+DEVICE_PATH := device/xiaomi/nuwa
+
+# Build
+BUILD_BROKEN_DUP_RULES := true
+BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
+BUILD_BROKEN_INCORRECT_PARTITION_IMAGES := true
 
 # A/B
 AB_OTA_UPDATER := true
@@ -49,9 +54,9 @@ SOONG_CONFIG_ufsbsg_ufsframework := bsg
 TARGET_BOOTLOADER_BOARD_NAME := kalama
 TARGET_NO_BOOTLOADER := true
 
-# Build
-BUILD_BROKEN_DUP_RULES := true
-BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
+# Camera
+TARGET_CAMERA_OVERRIDE_FORMAT_FROM_RESERVED := true
+MALLOC_SVELTE_FOR_LIBC32 := true
 
 # Display
 TARGET_SCREEN_DENSITY := 420
@@ -64,7 +69,8 @@ TARGET_FS_CONFIG_GEN += $(DEVICE_PATH)/configs/config.fs
 
 # HIDL
 DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE += \
-    $(DEVICE_PATH)/configs/vintf/framework_matrix_xiaomi.xml
+    $(DEVICE_PATH)/configs/vintf/framework_matrix_xiaomi.xml \
+	vendor/evolution/config/device_framework_matrix.xml
 
 DEVICE_MANIFEST_FILE += \
     $(DEVICE_PATH)/configs/vintf/manifest_kalama.xml \
@@ -82,14 +88,23 @@ BOARD_BOOTCONFIG := \
 
 BOARD_KERNEL_CMDLINE := \
     kasan=off \
-    disable_dma32=on \
-    mtdoops.fingerprint=$(AOSPA_VERSION)
+    disable_dma32=on 
 
 BOARD_KERNEL_PAGESIZE := 4096
 BOARD_USES_GENERIC_KERNEL_IMAGE := true
 TARGET_HAS_GENERIC_KERNEL_HEADERS := true
+BOARD_KERNEL_IMAGE_NAME := Image
+BOARD_PREBUILT_DTBIMAGE_DIR := device/xiaomi/xiaomi13-kernel/dtbs
+TARGET_PREBUILT_KERNEL := device/xiaomi/xiaomi13-kernel/Image
+TARGET_PREBUILT_DTBOIMG := device/xiaomi/xiaomi13-kernel/dtbs/dtbo.img
+TARGET_FORCE_PREBUILT_KERNEL := true
+PRODUCT_COPY_FILES += \
+    device/xiaomi/xiaomi13-kernel/Image:kerneltrue
 
 # Lineage Health
+TARGET_HEALTH_CHARGING_CONTROL_CHARGING_PATH := /sys/class/qcom-battery/input_suspend
+TARGET_HEALTH_CHARGING_CONTROL_CHARGING_ENABLED := 0
+TARGET_HEALTH_CHARGING_CONTROL_CHARGING_DISABLED := 1
 TARGET_HEALTH_CHARGING_CONTROL_SUPPORTS_BYPASS := false
 
 # Kernel Modules
@@ -97,9 +112,6 @@ BOARD_VENDOR_RAMDISK_RECOVERY_KERNEL_MODULES_LOAD := $(strip $(shell cat $(DEVIC
 
 # Metadata
 BOARD_USES_METADATA_PARTITION := true
-
-# OTA
-TARGET_OTA_ASSERT_DEVICE := fuxi|nuwa
 
 # Partitions
 BOARD_BOOTIMAGE_PARTITION_SIZE := 201326592
@@ -130,11 +142,16 @@ TARGET_COPY_OUT_SYSTEM_EXT := system_ext
 TARGET_COPY_OUT_VENDOR := vendor
 TARGET_COPY_OUT_VENDOR_DLKM := vendor_dlkm
 
-# Power
-TARGET_POWER_FEATURE_EXT_LIB := //$(DEVICE_PATH):libpowerfeature_ext_xiaomi13
-
 # PowerShare
-TARGET_POWERSHARE_NODE := /sys/class/qcom-battery/reverse_chg_mode
+SOONG_CONFIG_NAMESPACES += XIAOMI_POWERSHARE
+SOONG_CONFIG_XIAOMI_POWERSHARE := WIRELESS_TX_ENABLE_PATH
+SOONG_CONFIG_XIAOMI_POWERSHARE_WIRELESS_TX_ENABLE_PATH := /sys/class/qcom-battery/reverse_chg_mode
+
+# Platform
+TARGET_BOARD_PLATFORM := kalama
+
+# QCOM
+BOARD_USES_QCOM_HARDWARE := true
 
 # Properties
 TARGET_ODM_PROP += $(DEVICE_PATH)/configs/properties/odm.prop
@@ -148,8 +165,12 @@ TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
 TARGET_RECOVERY_UI_MARGIN_HEIGHT := 80
 TARGET_USERIMAGES_USE_F2FS := true
 
+# Security patch level
+VENDOR_SECURITY_PATCH := $(PLATFORM_SECURITY_PATCH)
+
 # SELinux
 include device/xiaomi/sepolicy/SEPolicy.mk
+include device/qcom/sepolicy_vndr/SEPolicy.mk
 BOARD_VENDOR_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/vendor
 SYSTEM_EXT_PRIVATE_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/private
 SYSTEM_EXT_PUBLIC_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy/public
@@ -201,6 +222,11 @@ BOARD_AVB_ODM_ADD_HASHTREE_FOOTER_ARGS += --hash_algorithm sha256
 SOONG_CONFIG_NAMESPACES += XIAOMI_VIBRATOR
 SOONG_CONFIG_XIAOMI_VIBRATOR := USE_EFFECT_STREAM
 SOONG_CONFIG_XIAOMI_VIBRATOR_USE_EFFECT_STREAM := true
+
+# Touch
+SOONG_CONFIG_NAMESPACES += XIAOMI_TOUCH
+SOONG_CONFIG_XIAOMI_TOUCH := HIGH_TOUCH_POLLING_PATH
+SOONG_CONFIG_XIAOMI_TOUCH_HIGH_TOUCH_POLLING_PATH := /sys/devices/virtual/touch/touch_dev/bump_sample_rate
 
 # WiFi
 BOARD_WLAN_DEVICE := qcwcn

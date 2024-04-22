@@ -14,7 +14,15 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/emulated_storage.mk)
 $(call inherit-product, frameworks/native/build/phone-xhdpi-6144-dalvik-heap.mk)
 
 # Get non-open-source specific aspects
-$(call inherit-product, vendor/xiaomi/xiaomi13/xiaomi13-vendor.mk)
+$(call inherit-product, vendor/xiaomi/nuwa/nuwa-vendor.mk)
+
+# Inherit from those products. Most specific first.
+$(call inherit-product, $(SRC_TARGET_DIR)/product/core_64_bit.mk)
+$(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
+
+# Enable virtual A/B OTA
+$(call inherit-product, $(SRC_TARGET_DIR)/product/generic_ramdisk.mk)
+$(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota/android_t_baseline.mk)
 
 # Soong namespaces
 PRODUCT_SOONG_NAMESPACES += \
@@ -28,9 +36,6 @@ PRODUCT_AAPT_PREF_CONFIG := xxhdpi
 # A/B
 ENABLE_AB := true
 ENABLE_VIRTUAL_AB := true
-
-$(call inherit-product, $(SRC_TARGET_DIR)/product/generic_ramdisk.mk)
-$(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota/android_t_baseline.mk)
 
 PRODUCT_VIRTUAL_AB_COMPRESSION_METHOD := gz
 
@@ -50,9 +55,6 @@ PRODUCT_PACKAGES += \
     checkpoint_gc \
     otapreopt_script
 
-# Board
-TARGET_BOARD_PLATFORM := kalama
-
 # Partitions
 PRODUCT_USE_DYNAMIC_PARTITIONS := true
 
@@ -62,8 +64,6 @@ TARGET_COMMON_QTI_COMPONENTS := \
     alarm \
     audio \
     av \
-    bt \
-    display \
     gps \
     init \
     overlay \
@@ -97,13 +97,12 @@ PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/audio/audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio/sku_kalama/audio_policy_configuration.xml \
     $(LOCAL_PATH)/configs/audio/audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/audio/sku_kalama_qssi/audio_policy_configuration.xml
 
+# Viper
+$(call inherit-product, packages/apps/ViPER4AndroidFX/config.mk)
+
 # Authsecret
 PRODUCT_PACKAGES += \
     android.hardware.authsecret@1.0.vendor
-
-# Boot Animation
-PRODUCT_COPY_FILES += \
-    vendor/aospa/bootanimation/1440/bootanimation.zip:$(TARGET_COPY_OUT_ODM)/overlayfs/nuwa/product/media/bootanimation.zip
 
 # Boot Control
 PRODUCT_PACKAGES += \
@@ -112,8 +111,6 @@ PRODUCT_PACKAGES += \
     android.hardware.boot@1.2-service
 
 # Camera
-$(call inherit-product-if-exists, vendor/xiaomi/camera/miuicamera.mk)
-
 PRODUCT_PACKAGES += \
     android.hardware.camera.common-V1-ndk.vendor \
     android.hardware.camera.device-V1-ndk.vendor \
@@ -148,6 +145,9 @@ PRODUCT_COPY_FILES += \
 
 # Display
 TARGET_PANEL_DIMENSION_HAS_EXTRA_PRECISION := true
+$(call inherit-product, vendor/qcom/opensource/commonsys-intf/display/config/config/display-interfaces-product.mk)
+$(call inherit-product, vendor/qcom/opensource/commonsys-intf/display/config/config/display-product-system.mk)
+
 
 # Dolby
 PRODUCT_PACKAGES += \
@@ -190,11 +190,14 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     android.hardware.identity-V4-ndk.vendor
 
+# FUSE passthrough
+PRODUCT_PRODUCT_PROPERTIES += \
+    persist.sys.fuse.passthrough.enable=true
+	
 # Init
 PRODUCT_PACKAGES += \
     fstab.qcom \
     init.target.rc \
-    init.mi_overlay.rc \
     init.mi_perf.rc \
     init.mi_service.rc \
     init.mi_udfps.rc \
@@ -278,16 +281,23 @@ PRODUCT_PACKAGES += \
     android.hardware.neuralnetworks-V1-ndk.vendor
 
 # NFC
-$(call inherit-product, vendor/nxp/opensource/commonsys/packages/apps/Nfc/nfc_system_product.mk)
+PRODUCT_PACKAGES += \
+    com.android.nfc_extras \
+    Tag
+
+PRODUCT_PACKAGES += \
+    android.hardware.nfc-service.nxp \
+    android.hardware.secure_element@1.2.vendor \
+    libchrome.vendor
 
 PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.hardware.nfc.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.nfc.xml \
     frameworks/native/data/etc/android.hardware.nfc.ese.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.nfc.ese.xml \
     frameworks/native/data/etc/android.hardware.nfc.hcef.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.nfc.hcef.xml \
     frameworks/native/data/etc/android.hardware.nfc.hce.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.nfc.hce.xml \
     frameworks/native/data/etc/android.hardware.nfc.uicc.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.nfc.uicc.xml \
-    frameworks/native/data/etc/android.hardware.nfc.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.nfc.xml \
-    frameworks/native/data/etc/android.hardware.se.omapi.ese.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.se.omapi.ese.xml \
     frameworks/native/data/etc/android.hardware.se.omapi.uicc.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.se.omapi.uicc.xml \
+    frameworks/native/data/etc/android.hardware.se.omapi.ese.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.se.omapi.ese.xml \
     frameworks/native/data/etc/com.android.nfc_extras.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/com.android.nfc_extras.xml \
     frameworks/native/data/etc/com.nxp.mifare.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/com.nxp.mifare.xml
 
@@ -295,27 +305,14 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     Xiaomi13CarrierConfigRes \
     Xiaomi13CarrierConfigResMiui \
-    Xiaomi13DolbyFuxi \
     Xiaomi13Frameworks \
-    Xiaomi13FrameworksAOSPA \
-    Xiaomi13FrameworksNuwa \
     Xiaomi13Nfc \
     Xiaomi13SecureElement \
     Xiaomi13Settings \
     Xiaomi13Settings2210132C \
     Xiaomi13Settings2210132G \
-    Xiaomi13Settings2211133C \
-    Xiaomi13Settings2211133G \
-    Xiaomi13SettingsAOSPA \
-    Xiaomi13SettingsProvider \
-    Xiaomi13SettingsProviderNuwa \
     Xiaomi13SystemUI \
-    Xiaomi13SystemUIAOSPA \
-    Xiaomi13SystemUINuwa \
-    Xiaomi13WifiRes \
-    Xiaomi13WifiResMainline \
-    Xiaomi13WifiResNuwa \
-    Xiaomi13WifiResNuwaMainline
+    Xiaomi13WifiRes
 
 # Parts
 PRODUCT_PACKAGES += \
@@ -325,14 +322,9 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     android.hardware.renderscript@1.0-impl
 
-# Powershare
+# PowerShare
 PRODUCT_PACKAGES += \
-    vendor.aospa.powershare-service
-
-# Properties
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/configs/properties/odm_fuxi.prop:$(TARGET_COPY_OUT_ODM)/etc/build_fuxi.prop \
-    $(LOCAL_PATH)/configs/properties/odm_nuwa.prop:$(TARGET_COPY_OUT_ODM)/etc/build_nuwa.prop
+    vendor.lineage.powershare@1.0-service.xiaomi
 
 # QMI
 PRODUCT_PACKAGES += \
@@ -399,14 +391,26 @@ PRODUCT_COPY_FILES += \
 
 # WiFi
 PRODUCT_COPY_FILES += \
+    frameworks/native/data/etc/android.hardware.wifi.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.xml \
     frameworks/native/data/etc/android.hardware.wifi.aware.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.aware.xml \
     frameworks/native/data/etc/android.hardware.wifi.direct.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.direct.xml \
     frameworks/native/data/etc/android.hardware.wifi.passpoint.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.passpoint.xml \
-    frameworks/native/data/etc/android.hardware.wifi.rtt.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.rtt.xml \
-    frameworks/native/data/etc/android.hardware.wifi.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.xml \
-    frameworks/native/data/etc/android.software.ipsec_tunnels.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.software.ipsec_tunnels.xml
+    frameworks/native/data/etc/android.hardware.wifi.rtt.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.wifi.rtt.xml
 
+# WiFi
+PRODUCT_PACKAGES += \
+    android.hardware.wifi-service \
+    hostapd \
+    libwifi-hal-qcom \
+    libwpa_client \
+    WifiOverlay \
+    wpa_cli \
+    wpa_supplicant \
+    wpa_supplicant.conf
+	
 # WiFi Display
 PRODUCT_PACKAGES += \
     libnl \
     libwfdaac_vendor
+
+$(call inherit-product, vendor/xiaomi/nuwa/nuwa-vendor.mk)
