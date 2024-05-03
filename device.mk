@@ -208,6 +208,7 @@ PRODUCT_COPY_FILES += \
 
 # Kernel Binary
 KERNEL_PREBUILT_DIR := device/xiaomi/xiaomi13-kernel
+$(call inherit-product, $(LOCAL_PATH)/kernel-platform.mk)
 
 # Keymaster
 PRODUCT_PACKAGES += \

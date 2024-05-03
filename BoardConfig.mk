@@ -98,8 +98,7 @@ BOARD_PREBUILT_DTBIMAGE_DIR := device/xiaomi/xiaomi13-kernel/dtbs
 TARGET_PREBUILT_KERNEL := device/xiaomi/xiaomi13-kernel/Image
 TARGET_PREBUILT_DTBOIMG := device/xiaomi/xiaomi13-kernel/dtbs/dtbo.img
 TARGET_FORCE_PREBUILT_KERNEL := true
-PRODUCT_COPY_FILES += \
-    device/xiaomi/xiaomi13-kernel/Image:kerneltrue
+
 
 # Lineage Health
 TARGET_HEALTH_CHARGING_CONTROL_CHARGING_PATH := /sys/class/qcom-battery/input_suspend
