@@ -145,8 +145,8 @@ PRODUCT_COPY_FILES += \
 
 # Display
 TARGET_PANEL_DIMENSION_HAS_EXTRA_PRECISION := true
-$(call inherit-product, vendor/qcom/opensource/commonsys-intf/display/config/config/display-interfaces-product.mk)
-$(call inherit-product, vendor/qcom/opensource/commonsys-intf/display/config/config/display-product-system.mk)
+$(call inherit-product, vendor/qcom/opensource/commonsys-intf/display/config/display-interfaces-product.mk)
+$(call inherit-product, vendor/qcom/opensource/commonsys-intf/display/config/display-product-system.mk)
 
 
 # Dolby
@@ -209,6 +209,7 @@ PRODUCT_COPY_FILES += \
 # Kernel Binary
 KERNEL_PREBUILT_DIR := device/xiaomi/xiaomi13-kernel
 $(call inherit-product, $(LOCAL_PATH)/kernel-platform.mk)
+
 
 # Keymaster
 PRODUCT_PACKAGES += \

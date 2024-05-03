@@ -194,10 +194,10 @@ vendor/etc/audio_cloud_control_white_list.xml
 vendor/lib64/hw/audio.primary.kalama.so
 vendor/lib64/lib_misound_asc.so
 vendor/lib64/libadm.so
-vendor/lib64/libar-acdb.so
-vendor/lib64/libar-gpr.so
-vendor/lib64/libar-gsl.so
-vendor/lib64/libar-pal.so
+-vendor/lib64/libar-acdb.so
+-vendor/lib64/libar-gpr.so
+-vendor/lib64/libar-gsl.so
+-vendor/lib64/libar-pal.so
 vendor/lib64/libats.so
 vendor/lib64/libaudio_log_utils.so
 vendor/lib64/libaudiochargerlistener.so
