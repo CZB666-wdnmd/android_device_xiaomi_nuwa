@@ -10,6 +10,9 @@ $(call inherit-product, device/xiaomi/sm8550-common/common.mk)
 # Inherit from the proprietary version
 $(call inherit-product, vendor/xiaomi/nuwa/nuwa-vendor.mk)
 
+# Camera
+$(call inherit-product-if-exists, vendor/xiaomi/camera/miuicamera.mk)
+
 # DSP Volume Synchronizer
 PRODUCT_PACKAGES += \
     DSPVolumeSynchronizer
@@ -22,17 +25,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/init/init.nuwa.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.nuwa.rc \
 
-# Euicc
-PRODUCT_PACKAGES += \
-    XiaomiEuicc
-
-PRODUCT_COPY_FILES += \
-    frameworks/native/data/etc/android.hardware.telephony.euicc.xml:$(TARGET_COPY_OUT_PRODUCT)/etc/permissions/android.hardware.telephony.euicc.xml
 
 # Overlay
 PRODUCT_PACKAGES += \
     SettingsProviderResNuwa \
-    ApertureOverlayNuwa \
     FrameworkResOverlayNuwa \
     SettingsOverlayNuwa \
     SystemUIOverlayNuwa \

@@ -14,6 +14,14 @@ $(call inherit-product, device/xiaomi/nuwa/device.mk)
 # Inherit from common lineage configuration
 $(call inherit-product, vendor/lineage/config/common_full_phone.mk)
 
+TARGET_BOOT_ANIMATION_RES := 1440
+TARGET_HAS_UDFPS := true
+TARGET_SUPPORTS_QUICK_TAP := false
+
+# Boot animation
+TARGET_SCREEN_HEIGHT := 3200
+TARGET_SCREEN_WIDTH := 1440
+
 PRODUCT_NAME := lineage_nuwa
 PRODUCT_DEVICE := nuwa
 PRODUCT_MANUFACTURER := Xiaomi
